@@ -18,7 +18,12 @@ mongoose
 
 const app = express();
 app.use(express.json());
-app.use(cors())
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Allow requests from React app
+    credentials: true, // Allow sending cookies
+  })
+);
 
 app.use("/api/user", Userrouter);
 app.use("/api/auth", authRouter);

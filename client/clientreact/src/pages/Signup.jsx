@@ -21,6 +21,7 @@ function Signout() {
         headers: {
           "Content-Type": "application/json", // Ensure this header is set
         },
+        credentials: "include",
         body: JSON.stringify(formdata),
       });
       const data = await res.json();
