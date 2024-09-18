@@ -45,37 +45,44 @@ function Signout() {
         <input
           type="text"
           placeholder="username"
-          onChange={(e) => {handleChange("username",e.target.value)}}
+          onChange={(e) => {
+            handleChange("username", e.target.value);
+          }}
           className="border p-3 rounded-lg"
           id="username"
         />
         <input
           type="text"
           placeholder="email"
-          onChange={(e)=>{handleChange("email",e.target.value)}}
+          onChange={(e) => {
+            handleChange("email", e.target.value);
+          }}
           className="border p-3 rounded-lg"
           id="email"
         />
         <input
           type="text"
           placeholder="password"
-          onChange={(e)=>{handleChange("password",e.target.value)}}
+          onChange={(e) => {
+            handleChange("password", e.target.value);
+          }}
           className="border p-3 rounded-lg"
           id="password"
         />
-        <button disabled={loading} className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-          {loading ? 'Loading...' : 'Sign Up'}
+        <button
+          disabled={loading}
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+        >
+          {loading ? "Loading..." : "Sign Up"}
         </button>
       </form>
       <div className="flex gap-2 mt-5">
         <p>Have an account</p>
-        <Link>
-          <span to={"/sign-in"} className="text-blue-700">
-            Sign in
-          </span>
+        <Link to={"/sign-in"}>
+          <span className="text-blue-700">Sign in</span>
         </Link>
       </div>
-      {error && <p className='text-red-500 mt-5'>{error}</p>}
+      {error && <p className="text-red-500 mt-5">{error}</p>}
     </div>
   );
 }
