@@ -7,10 +7,9 @@ export const signup = async (req, res, next) => {
   try {
     const newuser = new User({ username, email, password : hashedPassword});
     await newuser.save();
+    console.log("saved")
     res.status(201).json({ message: "user created successfully" });
   } catch (error) {
     next(error);
   }
-};
-
-
+}
