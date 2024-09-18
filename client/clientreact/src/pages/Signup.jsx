@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link,useNavigate } from 'react-router-dom'
+import Oath from '../components/oath'
 
 function Signout() {
   const [formdata, setformdata] = useState({})
@@ -75,6 +76,7 @@ function Signout() {
         >
           {loading ? "Loading..." : "Sign Up"}
         </button>
+        <Oath/>
       </form>
       <div className="flex gap-2 mt-5">
         <p>Have an account</p>
