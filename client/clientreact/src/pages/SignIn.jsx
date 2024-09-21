@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { signInFailure, signInSuccess, singInStart } from "../redux/user/userSlice.js";
+import { signInFailure, signInSuccess, singInStart,initialStart } from "../redux/user/userSlice.js";
 import Oath from "../components/oath.jsx";
 
 function Signin() {
@@ -9,6 +9,9 @@ function Signin() {
   const { loading, error} = useSelector(state => state.user)
  const dispatch = useDispatch()
   const navigate = useNavigate();
+  useEffect(() => {
+    dispatch(initialStart());
+  }, []);
   const handleChange = (id, value) => {
     setformdata((prevData) => ({
       ...prevData,
@@ -33,7 +36,6 @@ function Signin() {
         return;
       }
        dispatch(signInSuccess(data))
-       console.log(data)
       navigate("/");
     } catch (error) {
       dispatch(signInFailure(error.message))

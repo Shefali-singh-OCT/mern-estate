@@ -1,12 +1,25 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link,useNavigate } from 'react-router-dom'
+import {
+  signInFailure,
+  signInSuccess,
+  singInStart,
+  initialStart,
+} from "../redux/user/userSlice.js";
 import Oath from '../components/oath'
+import { useDispatch, useSelector } from 'react-redux';
 
 function Signout() {
   const [formdata, setformdata] = useState({})
-  const [error,setError] = useState()
-  const [loading,setloading] = useState(false)
+  // const [error,setError] = useState()
+  // const [loading,setloading] = useState(false)
+  const dispatch = useDispatch()
+  const {loading,error} = useSelector(state => state.user)
   const navigate = useNavigate()
+  useEffect(() => {
+    dispatch(initialStart())
+  }, []); 
+
   const handleChange = (id, value) => {
     setformdata((prevData) => ({
       ...prevData,
@@ -16,7 +29,7 @@ function Signout() {
   const handleSubmit = async (e)=>{
     try{
       e.preventDefault();
-      setloading(true);
+      dispatch(singInStart())
       const res = await fetch("http://localhost:3000/api/auth/signup", {
         method: "post",
         headers: {
@@ -27,16 +40,13 @@ function Signout() {
       });
       const data = await res.json();
       if (data.success === false) {
-        setError(data.message);
-        setloading(false);
+        dispatch(signInFailure(data.message))
         return;
       }
-      setloading(false);
-      setError(null);
-      navigate('/sign-in')
+      dispatch(signInSuccess(data))
+      navigate('/')
     }catch(error){
-           setloading(false)
-           setError(error.message)
+           dispatch(signInFailure(error.message))
     }
   }
   return (

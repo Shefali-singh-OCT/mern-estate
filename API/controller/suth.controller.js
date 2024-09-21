@@ -9,8 +9,21 @@ export const signup = async (req, res, next) => {
   try {
     const newuser = new User({ username, email, password: hashedPassword });
     await newuser.save();
-    console.log("saved");
-    res.status(201).json({ message: "user created successfully" });
+    // const {password: pass,...rest} = ._doc
+    // console.log("saved");
+    // res.status(201).json(rest);
+
+     const token = jwt.sign({ id: newuser._id }, process.env.JWT_SECRET);
+     const { password: pass, ...userInfo } = newuser._doc;
+     res
+       .cookie("access_token", token, {
+         httpOnly: true, // Ensures the cookie is not accessible via JavaScript
+         secure: true, // Set to true in production (requires HTTPS)
+         sameSite: "None",
+         maxAge: 24 * 60 * 60 * 1000,path: '/'
+       })
+       .status(201)
+       .json(userInfo);
   } catch (error) {
     next(error);
   }
@@ -28,7 +41,12 @@ export const signin = async (req, res, next) => {
     const token = jwt.sign({ id: validuser._id }, process.env.JWT_SECRET);
     const { password: pass, ...userInfo } = validuser._doc;
     res
-      .cookie("access_token", token, { httpOnly: true })
+      .cookie("access_token", token, {
+        httpOnly: true, // Ensures the cookie is not accessible via JavaScript
+        secure: true, // Set to true in production (requires HTTPS)
+        sameSite: "None",
+        maxAge: 24 * 60 * 60 * 1000,path: '/'
+      })
       .status(202)
       .json(userInfo);
   } catch (error) {
@@ -43,7 +61,12 @@ export const google = async (req, res, next) => {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password: pass, ...rest } = user._doc;
       res
-        .cookie("access_token", token, { httpOnly: true })
+        .cookie("access_token", token, {
+          httpOnly: true, // Ensures the cookie is not accessible via JavaScript
+          secure: true, // Set to true in production (requires HTTPS)
+          sameSite: "None",
+          maxAge: 24 * 60 * 60 * 1000,path: '/'
+        })
         .status(200)
         .json(rest);
     } else {
@@ -61,7 +84,13 @@ export const google = async (req, res, next) => {
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
       const { password: pass, ...rest } = newUser._doc;
       res
-        .cookie("access_token", token, { httpOnly: true })
+        .cookie("access_token", token, {
+          httpOnly: true, // Ensures the cookie is not accessible via JavaScript
+          secure: true, // Set to true in production (requires HTTPS)
+          sameSite: "None",
+          maxAge: 24 * 60 * 60 * 1000,
+          path: '/'
+        })
         .status(200)
         .json(rest);
     }
@@ -69,3 +98,5 @@ export const google = async (req, res, next) => {
     next(error);
   }
 };
+
+
