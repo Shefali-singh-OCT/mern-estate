@@ -1,3 +1,4 @@
+import listing from "../../Models/ListingModel.js";
 import User from "../../Models/UserModel.js";
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs'
@@ -52,4 +53,16 @@ export const SignOut = (req,res,next)=>{
    }catch(error){
     next(error)
    }
+}
+
+export const getUserListing = async (req,res,next)=>{
+    if(req.user.id !== req.params.id){
+      return next(errorHandler(401,'You can only view own listing'))
+    }
+    try{
+        const listings = await listing.find({userRef: req.params.id});
+        res.status(200).json(listings)
+    }catch(error){
+      return next(error)
+    }
 }
