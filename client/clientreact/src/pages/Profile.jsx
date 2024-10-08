@@ -32,11 +32,13 @@ function Profile() {
   const [fileUploadError, setFileError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [showListingError, setShowListingError] = useState(false);
+  const [userListing, setUserListing] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  useEffect(()=>{   
-   setUpdateSuccess(false)
-  },[])
+  useEffect(() => {
+    setUpdateSuccess(false);
+  }, []);
 
   useEffect(() => {
     if (file) {
@@ -89,7 +91,7 @@ function Profile() {
         dispatch(signInFailure(data.message));
         return;
       }
-      console.log(data)
+      console.log(data);
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
     } catch (error) {
@@ -144,6 +146,59 @@ function Profile() {
       dispatch(signoutUserFailure(message.message));
     }
   };
+  const handleShowListing = async () => {
+    try {
+      setShowListingError(false);
+      const res = await fetch(
+        `http://localhost:3000/api/user/listing/${currentUser._id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+      const data = await res.json();
+      if (data.success == false) {
+        setShowListingError(true);
+        return;
+      }
+      setUserListing(data);
+    } catch (error) {
+      console.log("heyy6");
+      setShowListingError(true);
+    }
+  };
+  useEffect(() => {
+    console.log("Updated userListing:", userListing);
+  }, [userListing]);
+  const handleListingDelete = async(id) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/listing/deleteListing/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = await res.json()
+      if(data.success===false){
+        console.log(data.message)
+        return;
+      }
+      setUserListing((prev) => prev.filter((listing) => listing._id !== id))
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const userCard = ({user}) => {
+    {
+      return (
+        <div>
+          
+        </div>
+      );
+    }
+  }
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-2xl font-semibold my-7 text-center">Profile</h1>
@@ -225,10 +280,98 @@ function Profile() {
           Sign out
         </span>
       </div>
+      <button
+        onClick={handleShowListing}
+        className="text-green-700 mt-3 font-semibold w-full"
+      >
+        {" "}
+        Show Listings{" "}
+      </button>
+      <p className="text-red-700 font-semibold text-center">
+        {showListingError ? "Error showing listing" : ""}
+      </p>
       <p className="text-red-700 mt-5 text-center"> {error ? error : ""} </p>
       <p className="text-green-700 text-center">
         {updateSuccess ? "User is updated successfully!" : ""}
       </p>
+      {userListing && userListing.length > 0 ? (
+        <h1 className="text-center mt-7 text-2xl font-semibold">
+          Your Listing
+        </h1>
+      ) : (
+        ""
+      )}
+      {userListing &&
+        userListing.length > 0 &&
+        userListing.map((user) =>
+          user.imagesUrls.map((url, index) => (
+            <div
+              key={`${user._id}-${index}`}
+              className="border rounded-lg p-3 flex justify-between items-center gap-4"
+            >
+              <div className="bg-red-400 h-32 w-45"></div>
+              <Link to={`/listing/${user._id}`}>
+                <img
+                  src={url}
+                  alt="listing image"
+                  className="h-16 w-16 object-contain"
+                />
+              </Link>
+              <Link
+                className="text-state-800 font-semibold flex-1 hover:underline truncate"
+                to={`/listing/${user._id}`}
+              >
+                <p>{user.name}</p>
+              </Link>
+              <div className="flex flex-col items-center">
+                <button
+                  onDoubleClick={handleListingDelete(user._id)}
+                  className="text-red-700 uppercase"
+                >
+                  Delete
+                </button>
+                <button className="text-green-700 uppercase">Edit</button>
+              </div>
+            </div>
+          ))
+        )}
+
+      {/* {userListing &&
+        userListing.length > 0 &&
+        userListing.map((user) => {
+          {
+            user.imagesUrls.map((url, index) => (
+              <div
+                key={user._id}
+                className="border rounded-lg p-3 flex justify-between items-center gap-4"
+              >
+                <div className="bg-red-400 h-32 w-45"></div>
+                <Link to={`/listing/${user._id}`}>
+                  <img
+                    src={url}
+                    alt="listing image"
+                    className="h-16 w-16 object-contaian"
+                  />
+                </Link>
+                <Link
+                  className="text-state-800 font-semibold flex-1 hover:underline truncate"
+                  to={`/listing/${user._id}`}
+                >
+                  <p>{user.name}</p>
+                </Link>
+                <div className="flex flex-col items-center">
+                  <button
+                    //onDoubleClick={handleListingDelete(user._id)}
+                    className="text-red-700 uppercase"
+                  >
+                    Delete
+                  </button>
+                  <button className="text-green-700 uppercase">edit</button>
+                </div>
+              </div>
+            ));
+          }
+        })} */}
     </div>
   );
 }

@@ -15,7 +15,7 @@ export default function CreateListing() {
   const [loading, setLoading] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
-    imageURLS: [],
+    imagesUrls: [],
     name: "",
     description: "",
     address: "",
@@ -33,7 +33,7 @@ export default function CreateListing() {
   const [upload, setUploading] = useState(false);
   const navigate = useNavigate();
   const handleImageSubmit = (e) => {
-    if (files.length > 0 && files.length + formData.imageURLS.length < 7) {
+    if (files.length > 0 && files.length + formData.imagesUrls.length < 7) {
       setUploading(true);
       setImageUploadError(false);
       const promise = [];
@@ -44,7 +44,7 @@ export default function CreateListing() {
         .then((urls) => {
           setFormData({
             ...formData,
-            imageURLS: formData.imageURLS.concat(urls),
+            imagesUrls: formData.imagesUrls.concat(urls),
           });
         })
         .then(() => {
@@ -90,21 +90,22 @@ export default function CreateListing() {
     if (confirmed) {
       setFormData({
         ...formData,
-        imageURLS: formData.imageURLS.filter((_, i) => i !== index),
+        imagesUrls: formData.imagesUrls.filter((_, i) => i !== index),
       });
     }
   };
   const handlesubmit = async (e) => {
     e.preventDefault();
+    setImageUploadError(false)
     try {
-      if (formData.imageURLS.length < 1) {
+      if (formData.imagesUrls.length < 1) {
         return setError("You must upload atleast one image");
       }
       if (+formData.regularPrice < +formData.discountPrice) {
         return setError("Discount price must be lower than regular price");
       }
       setLoading(true);
-      setError(false)
+      setError(false);
       const res = await fetch("http://localhost:3000/api/listing/create", {
         method: "POST",
         headers: {
@@ -119,7 +120,7 @@ export default function CreateListing() {
         setError(data.message);
         return;
       }
-      console.log("exporting successfull")
+      console.log(data)
       navigate(`/lisitng/${data._id}`);
     } catch (error) {
       setError(error.message);
@@ -134,7 +135,7 @@ export default function CreateListing() {
       });
     }
     if (
-      e.target.id === "parking" ||
+      e.target.id === "parkings" ||
       e.target.id === "furnished" ||
       e.target.id === "offer"
     ) {
@@ -336,8 +337,8 @@ export default function CreateListing() {
           <p className="text-red-700 mt-2">
             {imageUploadError ? imageUploadError : ""}
           </p>
-          {formData.imageURLS.length > 0
-            ? formData.imageURLS.map((urls, index) => (
+          {formData.imagesUrls.length > 0
+            ? formData.imagesUrls.map((urls, index) => (
                 <div
                   key={urls}
                   className="flex justify-between p-3 border items-center"

@@ -46,7 +46,7 @@ const schems = new mongoose.Schema({
     required: true,
   },
   imagesUrls: {
-    type: Array,
+    type: [String],
     required: true
   },
   userRef: {

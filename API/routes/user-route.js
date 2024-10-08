@@ -7,6 +7,6 @@ router.get("/test",test);
 router.post("/update/:id",verifyToken,updateUser)
 router.delete("/delete/:id",verifyToken,deleteUser)
 router.get("/signout",verifyToken,SignOut)
-router.get("/listing/:id",verifyToken,getUserListing)
+router.get("/listing/:id",getUserListing)
 
-export default router
+export default router   
