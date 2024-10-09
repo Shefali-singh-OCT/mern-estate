@@ -32,13 +32,20 @@ function Header() {
               About
             </li>
           </Link>
-          <Link to="/profile">
-            {currentUser ? (
-              <img src={currentUser.avatar} className='rounded-full h-9 w-9 object-cover' alt='profile'/>
-            ) : 
-              (<li className="text-slate-700 hover:underline">Sign in</li>)
-            }
-          </Link>
+
+          {currentUser ? (
+            <Link to="/profile">
+              <img
+                src={currentUser.avatar}
+                className="rounded-full h-9 w-9 object-cover"
+                alt="profile"
+              />
+            </Link>
+          ) : (
+            <Link to="/sign-in">
+              <li className="text-slate-700 hover:underline">Sign in</li>
+            </Link>
+          )}
         </ul>
       </div>
     </header>

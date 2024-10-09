@@ -85,7 +85,7 @@ export default function CreateListing() {
   };
   const handleremoveimage = (index) => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete your account? This action cannot be undo."
+      "Are you sure you want to delete this picture??"
     );
     if (confirmed) {
       setFormData({
@@ -114,13 +114,15 @@ export default function CreateListing() {
         credentials: "include",
         body: JSON.stringify(formData),
       });
+      console.log("Hey i am just going to parse data")
       const data = await res.json();
+      console.log("Just parsed")
       setLoading(false);
       if (data.success == false) {
         setError(data.message);
         return;
       }
-      console.log(data)
+      console.log("hey your data is been converted into json successfully: ",data)
       navigate(`/lisitng/${data._id}`);
     } catch (error) {
       setError(error.message);
@@ -339,7 +341,7 @@ export default function CreateListing() {
           </p>
           {formData.imagesUrls.length > 0
             ? formData.imagesUrls.map((urls, index) => (
-                <div
+                <div 
                   key={urls}
                   className="flex justify-between p-3 border items-center"
                 >
@@ -347,8 +349,8 @@ export default function CreateListing() {
                     src={urls}
                     alt="listing image"
                     className="w-20 h-20 object-contain rounded-lg"
-                  />
-                  <button
+                  /> 
+                  <button 
                     type="button"
                     onClick={() => handleremoveimage(index)}
                     className="p-3 text-red-700 rounded-lg uppercase hover:opacity-75"
