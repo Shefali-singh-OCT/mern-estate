@@ -174,22 +174,26 @@ function Profile() {
   // }, [userListing]);
   const handleListingDelete = async (id,index) => {
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/listing/deleteListing/${id}/${index}`,
-        {
-          method: "DELETE",
+      const responses = window.confirm("Are you sure you want to delete this photo");
+      if(responses){
+        const res = await fetch(
+          `http://localhost:3000/api/listing/deleteListing/${id}/${index}`,
+          {
+            method: "DELETE",
+          }
+        );
+        const data = await res.json();
+        if (data.success === false) {
+          console.log(data.message);
+          return;
         }
-      );
-      const data = await res.json();
-      if (data.success === false) {
-        console.log(data.message);
-        return;
+        if (data.imagesUrls.length > 0) {
+          setUserListing(data);
+          return;
+        }
+        setUserListing((prev) => prev.filter((listing) => listing._id !== id));
       }
-      if(data.imagesUrls.length > 0){
-        setUserListing(data);
-        return;
-      }
-      setUserListing((prev) => prev.filter((listing) => listing._id !== id));
+      
     } catch (error) {
       setShowListingError(error.message)
     }
@@ -322,12 +326,14 @@ function Profile() {
               </Link>
               <div className="flex flex-col items-center">
                 <button
-                  onClick={() => handleListingDelete(user._id,index)} // Fix: Use arrow function
+                  onClick={() => handleListingDelete(user._id, index)} // Fix: Use arrow function
                   className="text-red-700 uppercase"
                 >
                   Delete
                 </button>
-                <button className="text-green-700 uppercase">Edit</button>
+                <Link to={`/update-listing/${user._id}`}>
+                  <button className="text-green-700 uppercase">Edit</button>
+                </Link>
               </div>
             </div>
           ))
