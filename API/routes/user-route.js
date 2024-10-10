@@ -15,6 +15,6 @@ router.post("/update/:id",verifyToken,updateUser)
 router.delete("/delete/:id",verifyToken,deleteUser)
 router.get("/signout",verifyToken,SignOut)
 router.get("/listing/:id/",getUserListing)
-router.get("/getUserListing/:id",verifyToken,getUserDetails)
+router.get("/getUserListing/:id",getUserDetails)
 
 export default router   

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { Link } from "react-router-dom";
 
 function Contact(list) {
@@ -7,19 +7,18 @@ function Contact(list) {
   const [message, setMessage] = useState();
   useEffect(() => {
     const fetchDetails = async () => {
+      setError(null)
       try {
-        const response = fetch(
-          `http://localhost:3000/api/user/getUserListing/${list.list.userRef}`,
-          {
-            method: "GET",
-          }
-        );
-        const data = (await response).json();
+        const response =await fetch(
+          `http://localhost:3000/api/user/getUserListing/${list.list.userRef}`
+        )
+        const data = await response.json();
         if (data.success === false) {
           setError(data.message);
           return;
         }
         setLandlord(data);
+        console.log(landlord)
       } catch (error) {
         setError(error.message);
       }
@@ -42,7 +41,7 @@ function Contact(list) {
             id="message"
             rows="2"
             value={message}
-            onChange={() => setMessage(e.target.value)}
+            onChange={(e) => setMessage(e.target.value)}
             placeholder="Enter Your message here...."
             className="w-full border p-3 rounded-lg"
           ></textarea>
@@ -54,6 +53,7 @@ function Contact(list) {
           </Link>
         </div>
       )}
+      {error && <p className="text-red-700 text-xl mt-3">{error}</p>}
     </div>
   );
 }
