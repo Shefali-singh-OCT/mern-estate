@@ -58,7 +58,7 @@ export const getListing = async (req, res, next) => {
   try {
     const list = await listing.findById(req.params.id);
     if (!list) {
-      return errorHandler(401, "Listing not found");
+      return next(errorHandler(404, "Listing not found"));
     }
     res.status(201).json(list);
   } catch (error) {
@@ -66,38 +66,63 @@ export const getListing = async (req, res, next) => {
   }
 };
 
-export const getListings = async (req, res) => {
+export const getListings = async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit) || 9;
     const startIndex = parseInt(req.query.startIndex) || 0;
+
+    // Handle offer
     let offer = req.query.offer;
-
-    if (offer === "undefined" || offer === "false") {
-      offer = { $in: [false, true] };
+    if (offer === undefined || offer === "false") {
+      offer = { $in: [false, true] }; // Default to both false and true if not specified
+    } else {
+      offer = offer === "true"; // Convert to boolean
     }
+
+    // Handle furnished
     let furnished = req.query.furnished;
-    if (furnished === "undefined" || furnished === "false") {
-      furnished = { $in: [false, true] };
+    if (furnished === undefined || furnished === "false") {
+      furnished = { $in: [false, true] }; // Default to both false and true
+    } else {
+      furnished = furnished === "true"; // Convert to boolean
     }
+
+    // Handle parking
     let parking = req.query.parking;
-    if (parking === "undefined" || parking === "false") {
-      furnished = { $in: [false, true] };
+    if (parking === undefined || parking === "false") {
+      parking = { $in: [false, true] }; // Default to both false and true
+    } else {
+      parking = parking === "true"; // Convert to boolean
     }
+
+    // Handle type
     let type = req.query.type;
-    if (type === "undefined" || type === "all") {
-      type = { $in: ["sale", "rent"] };
+    if (type === undefined || type === "all") {
+      type = { $in: ["sale", "rent"] }; // Default to both 'sale' and 'rent' types
     }
 
+    // Handle search term
     const searchTerm = req.query.searchTerm || "";
-    const sort = req.query.sort || "createdAt";
-    const order = req.query.order || "decs";
-    const list = await listing.find({
-      name: {$regex: searchTerm, $options: 'i'},
-      offer,furnished,parking,type
-    }).sort({[sort]:order}).limit(limit).skip(startIndex)
 
-    return res.status(200).json(list)
+    // Handle sorting
+    const sort = req.query.sort || "createdAt";
+    const order = req.query.order === "asc" ? 1 : -1; // Default to descending order
+
+    // Fetch listings with the given filters
+    const list = await listing
+      .find({
+        name: { $regex: searchTerm, $options: "i" }, // Case-insensitive search
+        offer,
+        furnished,
+        parking,
+        type,
+      })
+      .sort({ [sort]: order })
+      .limit(limit)
+      .skip(startIndex);
+
+    return res.status(200).json(list);
   } catch (error) {
-    next(error);
+    next(error); // Properly handle errors
   }
 };
