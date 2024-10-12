@@ -14,6 +14,7 @@ export default function Search() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [list, setList] = useState([]);
   const navigate = useNavigate();
   const handleChange = (e) => {
@@ -63,23 +64,24 @@ export default function Search() {
     }));
     const fetchListing = async () => {
       setLoading(true);
-      console.log("Request made");
       try {
         const searchQuery = urlParams.toString();
+        setError(false)
         const res = await fetch(
           `http://localhost:3000/api/listing/get?${searchQuery}`
         );
-        console.log("1");
         const data = await res.json();
-        console.log("2");
+        if (data.length > 8) {
+          setShowMore(true);
+        }else{
+          setShowMore(false)
+        }
         setLoading(false);
         if (data.success === false) {
           setError(data.message);
           return;
         }
-        console.log(list);
         setList(data);
-        console.log("end");
       } catch (error) {
         setError(error.message);
       }
@@ -104,6 +106,23 @@ export default function Search() {
       setError(error.message);
     }
   };
+  const onShowMoreClick =  async ()=>{
+    const numberListing = list.length;
+    const startIndex = numberListing
+    const urlParams = new URLSearchParams(window.location.search)
+    urlParams.set('startIndex',startIndex)
+    const searchQuery = urlParams.toString()
+    const res = await fetch(
+      `http://localhost:3000/api/listing/get?${searchQuery}`
+    );
+    const data = await res.json()
+    if(data.length < 9){
+      setShowMore(false)
+    }
+    setList({
+      ...list, ...data
+    })
+  }
   return (
     <div className="flex flex-col  md:flex-row md:min-h-screen">
       <div className="p-7 border-b-2 md:border-r-2">
@@ -230,6 +249,14 @@ export default function Search() {
             list.map((listing) => (
               <ListingCard key={listing._id} listing={listing} />
             ))}
+          {showMore && (
+            <button
+              onClick={onShowMoreClick()}
+              className="text-green-700 hover:underline p-7 text-center w-full"
+            >
+              Show More
+            </button>
+          )}
           {error && (
             <p className="text-red-700 text-xl text-center w-full">{error}</p>
           )}
