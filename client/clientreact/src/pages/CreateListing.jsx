@@ -114,16 +114,13 @@ export default function CreateListing() {
         credentials: "include",
         body: JSON.stringify(formData),
       });
-      console.log("Hey i am just going to parse data")
       const data = await res.json();
-      console.log("Just parsed")
       setLoading(false);
       if (data.success == false) {
         setError(data.message);
         return;
       }
-      console.log("hey your data is been converted into json successfully: ",data)
-      navigate(`/lisitng/${data._id}`);
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);

@@ -74,7 +74,7 @@ export default function Listing() {
           <div className="mx-6  mb-6 cursor-pointer">
             <div className="flex mx-6 sm:m-auto max-w-5xl flex-col gap-5 mt-5 mb-5">
               <div className="text-2xl mt-5 sm:text-3xl ml-3 font-semibold">
-                {listing.name} - ${listing.regularPrice}
+                {listing.name} - ${listing.regularPrice.toLocaleString("en-US")}
                 {listing.type === "rent" ? "/month" : ""}
               </div>
 
@@ -130,12 +130,17 @@ export default function Listing() {
                   {listing.furnished ? "Furnished" : "unfurnished"}
                 </li>
               </ul>
-              {currentUser && listing.userRef === currentUser._id && !contact &&(
-                <button onClick={()=>setContact(true)} className="bg-slate-700 text-white rounded-lg uppercase p-3 hover:opacity-85">
-                  Contact landlord
-                </button>
-              )}
-              {contact && <Contact list = {listing}/>}
+              {currentUser &&
+                listing.userRef === currentUser._id &&
+                !contact && (
+                  <button
+                    onClick={() => setContact(true)}
+                    className="bg-slate-700 text-white rounded-lg uppercase p-3 hover:opacity-85"
+                  >
+                    Contact landlord
+                  </button>
+                )}
+              {contact && <Contact list={listing} />}
             </div>
           </div>
         </>

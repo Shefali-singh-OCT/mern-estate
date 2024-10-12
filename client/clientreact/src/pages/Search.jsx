@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ListingCard from "../components/ListingCard";
 
 export default function Search() {
   const [sideBarData, setSideBarData] = useState({
@@ -12,8 +13,8 @@ export default function Search() {
     order: "desc",
   });
   const [error, setError] = useState("");
-  const [loading,setLoading] = useState(false)
-  const [list,setList] = useState({})
+  const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
   const navigate = useNavigate();
   const handleChange = (e) => {
     if (
@@ -60,20 +61,30 @@ export default function Search() {
       sort: sortForUrl,
       order: orderForUrl,
     }));
-    const fetchListing = async()=>{
-         setLoading(true)
-         try{
-           const searchQuery = urlParams.toString();
-           const res = await fetch(`http://localhost:3000/api/listing/get?${searchQuery}`);
-           const data = await res.json()
-           setLoading(false)
-           setList(data)
-           console.log(list)
-         }catch(error){
-            setError(error.message)
-         }
-    }
-    fetchListing()
+    const fetchListing = async () => {
+      setLoading(true);
+      console.log("Request made");
+      try {
+        const searchQuery = urlParams.toString();
+        const res = await fetch(
+          `http://localhost:3000/api/listing/get?${searchQuery}`
+        );
+        console.log("1");
+        const data = await res.json();
+        console.log("2");
+        setLoading(false);
+        if (data.success === false) {
+          setError(data.message);
+          return;
+        }
+        console.log(list);
+        setList(data);
+        console.log("end");
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+    fetchListing();
   }, [location.search]);
 
   const handleSubmit = (e) => {
@@ -201,10 +212,28 @@ export default function Search() {
           </button>
         </form>
       </div>
-      <div className="">
+      <div className="flex-1">
         <h1 className="text-3xl font-semibold p-3 border-b text-slate-700 mt-5">
           Listing results:
         </h1>
+        <div className="p-7 flex flex-wrap gap-4">
+          {!loading && list?.length === 0 && (
+            <p className="text-xl text-slate-700">No Listing found:</p>
+          )}
+          {loading && (
+            <p className="text-xl text-slate-700 text-center w-full">
+              Loading...
+            </p>
+          )}
+          {!loading &&
+            list &&
+            list.map((listing) => (
+              <ListingCard key={listing._id} listing={listing} />
+            ))}
+          {error && (
+            <p className="text-red-700 text-xl text-center w-full">{error}</p>
+          )}
+        </div>
       </div>
     </div>
   );

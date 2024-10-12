@@ -6,7 +6,6 @@ export const createListing = async (req, res, next) => {
     const list = await listing
       .create(req.body)
       .then((us) => {
-        console.log("Listing created successfullt: ", us);
         res.status(201).json(us);
       })
       .catch((err) => {
@@ -70,7 +69,6 @@ export const getListings = async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit) || 9;
     const startIndex = parseInt(req.query.startIndex) || 0;
-
     // Handle offer
     let offer = req.query.offer;
     if (offer === undefined || offer === "false") {
@@ -78,7 +76,6 @@ export const getListings = async (req, res, next) => {
     } else {
       offer = offer === "true"; // Convert to boolean
     }
-
     // Handle furnished
     let furnished = req.query.furnished;
     if (furnished === undefined || furnished === "false") {
@@ -88,39 +85,35 @@ export const getListings = async (req, res, next) => {
     }
 
     // Handle parking
-    let parking = req.query.parking;
-    if (parking === undefined || parking === "false") {
-      parking = { $in: [false, true] }; // Default to both false and true
+    let parkings = req.query.parking;
+    if (parkings === undefined || parkings === "false") {
+      parkings = { $in: [false, true] }; // Default to both false and true
     } else {
-      parking = parking === "true"; // Convert to boolean
+      parkings = parkings === "true"; // Convert to boolean
     }
-
     // Handle type
     let type = req.query.type;
     if (type === undefined || type === "all") {
       type = { $in: ["sale", "rent"] }; // Default to both 'sale' and 'rent' types
     }
-
     // Handle search term
     const searchTerm = req.query.searchTerm || "";
 
     // Handle sorting
     const sort = req.query.sort || "createdAt";
     const order = req.query.order === "asc" ? 1 : -1; // Default to descending order
-
     // Fetch listings with the given filters
     const list = await listing
-      .find({
+        .find({
         name: { $regex: searchTerm, $options: "i" }, // Case-insensitive search
         offer,
         furnished,
-        parking,
+        parkings,
         type,
       })
       .sort({ [sort]: order })
       .limit(limit)
       .skip(startIndex);
-
     return res.status(200).json(list);
   } catch (error) {
     next(error); // Properly handle errors

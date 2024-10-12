@@ -9,11 +9,11 @@ function Header() {
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set("searchTerm", searchTerm);
+    const urlParams = new URLSearchParams(window.location.search); 
+    urlParams.set("searchTerm", searchTerm); 
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
-  };
+  };  
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const searchTermUrl = urlParams.get("searchTerm");
@@ -30,10 +30,10 @@ function Header() {
             <span className="text-slate-700">Estate</span>
           </h1>
         </Link>
-        <form
-          onSubmit={handleSubmit}
-          className="bg-slate-100 p-3 rounded-lg flex items-center"
-        >
+        <form  
+          onSubmit={handleSubmit} 
+          className="bg-slate-100 p-3 rounded-lg flex items-center" 
+        > 
           <input
             type="text"
             placeholder="search..."
