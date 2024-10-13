@@ -1,62 +1,67 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react"; // Correct import for Swiper and SwiperSlide
-import "swiper/css"; // Import Swiper styles
-import "swiper/css/navigation"; // Import Navigation styles
-import { Navigation } from "swiper/modules";// Correct import for Navigation module
-import Listing from "./Listing";
+import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore from "swiper";
+import { Navigation } from "swiper/modules";
+import "swiper/css/bundle";
+import ListingCard from "../components/ListingCard";
 
 // Initialize Swiper with Navigation
 function Home() {
+  SwiperCore.use([Navigation]);
   const [offerListing, setOfferListing] = useState([]);
   const [saleListing, setSaleListing] = useState([]);
   const [rentListing, setRentListing] = useState([]);
   const [error, setError] = useState(null);
+ useEffect(() => {
+   const fetchOfferListings = async () => {
+     try {
+       const res = await fetch(
+         "http://localhost:3000/api/listing/get?offer=true&limit=4"
+       );
+       if (!res.ok) throw new Error("Failed to fetch offer listings");
+       const data = await res.json();
+       setOfferListing(data);
+       fetchRentListings(); // Make sure this function is properly called next
+     } catch (error) {
+       setError(error.message);
+     }
+   };
 
-  useEffect(() => {
-    const fetchOfferListings = async () => {
-      try {
-        const res = await fetch(
-          "http://localhost:3000/api/listing/get?offer=true&limit=4"
-        );
-        const data = await res.json();
-        setOfferListing(data);
-        fetchRentListings();
-      } catch (error) {
-        setError(error.message);
-      }
-    };
+   const fetchRentListings = async () => {
+     try {
+       const res = await fetch(
+         "http://localhost:3000/api/listing/get?type=rent&limit=4"
+       );
+       if (!res.ok) throw new Error("Failed to fetch rent listings");
+       const data = await res.json();
+       setRentListing(data);
+       fetchSaleListings(); // Ensure the next function is called correctly
+     } catch (error) {
+       setError(error.message);
+     }
+   };
 
-    const fetchRentListings = async () => {
-      try {
-        const res = await fetch(
-          "http://localhost:3000/api/listing/get?type=rent&limit=4"
-        );
-        const data = await res.json();
-        setRentListing(data);
-        fetchSaleListings();
-      } catch (error) {
-        setError(error.message);
-      }
-    };
+   const fetchSaleListings = async () => {
+     try {
+       const res = await fetch(
+         "http://localhost:3000/api/listing/get?type=sale&limit=4"
+       );
+       if (!res.ok) throw new Error("Failed to fetch sale listings");
+       const data = await res.json();
+       setSaleListing(data);
+     } catch (error) {
+       setError(error.message);
+     }
+   };
 
-    const fetchSaleListings = async () => {
-      try {
-        const res = await fetch(
-          "http://localhost:3000/api/listing/get?type=sale&limit=4"
-        );
-        const data = await res.json();
-        setSaleListing(data);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
+   // Fetch listings on mount
+   fetchOfferListings();
+ }, []);
 
-    fetchOfferListings();
-  }, []);
 
   return (
-    <div>
+    <div className="px-3">
       {/* Top Section */}
       <div className="flex flex-col gap-6 p-28 px-3 max-w-6xl mx-auto">
         <h1 className="text-slate-700 font-bold text-3xl lg:text-6xl">
@@ -77,23 +82,16 @@ function Home() {
       </div>
 
       {/* Swiper for Offers */}
-      <Swiper navigation modules={[Navigation]}>
+      <Swiper navigation
+      >
         {offerListing &&
           offerListing.length > 0 &&
           offerListing.map((listing) => (
             <SwiperSlide key={listing._id}>
-              {listing.imageUrls && listing.imageUrls.length > 0 ? (
+              {listing.imagesUrls && listing.imagesUrls.length > 0 && (
                 <div
                   style={{
-                    background: `url(${listing.imageUrls[0]}) center no-repeat`,
-                    backgroundSize: "cover",
-                  }}
-                  className="h-[500px]"
-                ></div>
-              ) : (
-                <div
-                  style={{
-                    background: `url(/default-image.jpg) center no-repeat`, // Fallback image
+                    background: `url(${listing.imagesUrls[0]}) center no-repeat`,
                     backgroundSize: "cover",
                   }}
                   className="h-[500px]"
@@ -120,7 +118,7 @@ function Home() {
             </div>
             <div className="flex flex-wrap gap-4">
               {offerListing.map((listing) => (
-                <Listing listing={listing} key={listing._id} />
+                <ListingCard listing={listing} key={listing._id} />
               ))}
             </div>
           </div>
@@ -141,7 +139,7 @@ function Home() {
             </div>
             <div className="flex flex-wrap gap-4">
               {rentListing.map((listing) => (
-                <Listing listing={listing} key={listing._id} />
+                <ListingCard listing={listing} key={listing._id} />
               ))}
             </div>
           </div>
@@ -162,7 +160,7 @@ function Home() {
             </div>
             <div className="flex flex-wrap gap-4">
               {saleListing.map((listing) => (
-                <Listing listing={listing} key={listing._id} />
+                <ListingCard listing={listing} key={listing._id} />
               ))}
             </div>
           </div>

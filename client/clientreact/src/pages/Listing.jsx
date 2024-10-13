@@ -27,8 +27,9 @@ export default function Listing() {
   useEffect(() => {
     const fetchListing = async () => {
       try {
+         const listingId = params.listingId;
+         console.log(listingId)
         setLoading(true);
-        const listingId = params.listingId;
         const response = await fetch(
           `http://localhost:3000/api/listing/getListing/${listingId}`
         );
