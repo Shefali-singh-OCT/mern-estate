@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node API/index.js",
-    "build": "npm install && --prefix client && npm install --prefix clientreact && npm run build --prefix client"
+    "install": "npm install && npm install --prefix client && npm install --prefix clientreact",
+    "build": "npm run build --prefix clientreact"
   },
   "keywords": [],
   "author": "",
